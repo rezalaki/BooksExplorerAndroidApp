@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BooksExplorer</string>
+    <string name="failure">oops.. something went wrong :/</string>
+    <string name="no_internet">No Internet!\nMake sure of your network connections!</string>
+    <string name="no_data">No data found :/</string>
+    <string name="empty_input">Type the title of book you are looking for</string>
+    <string name="input_hint">type at least 4 characters...</string>
+    <string name="network_not_available">Your network is not available!</string>
+    <string name="try_again">Try Again</string>
+</resources>
