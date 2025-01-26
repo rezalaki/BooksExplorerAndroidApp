@@ -1,7 +1,9 @@
 package com.rezalaki.booksexplorer.di
 
 import com.rezalaki.booksexplorer.data.api.ApiServices
-import com.rezalaki.booksexplorer.data.repository.BooksRepository
+import com.rezalaki.booksexplorer.data.db.AppDatabase
+import com.rezalaki.booksexplorer.data.db.BookDao
+import com.rezalaki.booksexplorer.data.repository.BooksApiRepository
 import com.rezalaki.booksexplorer.data.repository.BooksRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -16,7 +18,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideBooksRepository(apiServices: ApiServices): BooksRepository =
-        BooksRepositoryImpl(apiServices)
+    fun provideBooksRepository(apiServices: ApiServices, bookDao: BookDao): BooksApiRepository =
+        BooksRepositoryImpl(apiServices, bookDao)
 
 }

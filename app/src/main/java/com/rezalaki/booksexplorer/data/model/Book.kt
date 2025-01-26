@@ -2,13 +2,17 @@ package com.rezalaki.booksexplorer.data.model
 
 import android.os.Parcelable
 import androidx.annotation.Keep
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 
+
+@Entity
 @Parcelize
 @Keep
 data class Book(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val title: String,
     val authorName: String,
     val firstPublishYear: Int,

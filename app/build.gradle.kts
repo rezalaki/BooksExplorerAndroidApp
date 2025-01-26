@@ -6,6 +6,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -44,11 +45,12 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
 
 dependencies {
+    // Room
+    implementation("androidx.room:room-runtime:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
     // Cookiebar2
     implementation("org.aviran.cookiebar2:cookiebar2:1.1.5")
     // Coil

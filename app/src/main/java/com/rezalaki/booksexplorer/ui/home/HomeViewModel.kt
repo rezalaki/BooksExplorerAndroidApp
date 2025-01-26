@@ -1,17 +1,13 @@
 package com.rezalaki.booksexplorer.ui.home
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.rezalaki.booksexplorer.data.api.ApiHandlerState
 import com.rezalaki.booksexplorer.data.model.Book
-import com.rezalaki.booksexplorer.data.repository.BooksRepository
+import com.rezalaki.booksexplorer.data.repository.BooksApiRepository
 import com.rezalaki.booksexplorer.util.NetworkChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val booksRepository: BooksRepository,
+    private val booksApiRepository: BooksApiRepository,
     private val networkChecker: NetworkChecker
 ) : ViewModel() {
 
@@ -55,7 +51,7 @@ class HomeViewModel @Inject constructor(
             }
 
             delay(DEBOUNCE_DELAY)
-            booksRepository.searchBooks(title).collectLatest { api ->
+            booksApiRepository.searchBooksApi(title).collectLatest { api ->
                 val uiState = when (api.state) {
                     ApiHandlerState.SUCCESS -> {
                         lastSearchedTitle = title
