@@ -47,10 +47,12 @@ android {
 
 
 dependencies {
+    implementation("com.google.devtools.ksp:symbol-processing-api:2.1.0-1.0.29")
     // Room
     implementation("androidx.room:room-runtime:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
     // Cookiebar2
     implementation("org.aviran.cookiebar2:cookiebar2:1.1.5")
     // Coil

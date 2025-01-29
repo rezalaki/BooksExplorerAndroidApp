@@ -5,6 +5,10 @@ import com.rezalaki.booksexplorer.data.model.Book
 import kotlinx.coroutines.flow.Flow
 
 
-interface BooksApiRepository {
+interface BooksRepository {
     suspend fun searchBooksApi(title: String): Flow<ApiHandler<List<Book>>>
+
+    suspend fun saveBookDb(book: Book): Flow<ApiHandler<Boolean>>
+    suspend fun deleteBookDb(book: Book): Flow<ApiHandler<Boolean>>
+    suspend fun isBookSavedDb(book: Book): Flow<ApiHandler<Boolean>>
 }

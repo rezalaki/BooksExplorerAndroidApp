@@ -1,6 +1,7 @@
 package com.rezalaki.booksexplorer.data.repository
 
 
+import android.util.Log
 import com.rezalaki.booksexplorer.data.api.ApiHandler
 import com.rezalaki.booksexplorer.data.api.ApiServices
 import com.rezalaki.booksexplorer.data.db.BookDao
@@ -17,7 +18,7 @@ import javax.inject.Singleton
 class BooksRepositoryImpl @Inject constructor(
     private val apiServices: ApiServices,
     private val bookDao: BookDao
-) : BooksApiRepository, BooksDbRepository {
+) : BooksRepository {
 
     override suspend fun searchBooksApi(title: String): Flow<ApiHandler<List<Book>>> {
         return flow {
@@ -74,6 +75,9 @@ class BooksRepositoryImpl @Inject constructor(
 
             emit(ApiHandler.loading())
             val books = bookDao.getAllBooks()
+            Log.d("TAGGGGGGG", "all books in DB");
+            Log.d("TAGGGGGGG", "$books");
+
             val isBookFound = books.any { it.id == book.id }
             emit(ApiHandler.success(isBookFound))
 

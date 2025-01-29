@@ -1,33 +1,31 @@
 package com.rezalaki.booksexplorer.ui.detail
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.rezalaki.booksexplorer.data.api.ApiHandlerState
 import com.rezalaki.booksexplorer.data.model.Book
-import com.rezalaki.booksexplorer.data.repository.BooksDbRepository
-import com.rezalaki.booksexplorer.ui.home.HomeUiState
+import com.rezalaki.booksexplorer.data.repository.BooksRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @HiltViewModel
-class DetailViewModel(
-    private val booksDbRepository: BooksDbRepository
+class DetailViewModel @Inject constructor(
+    private val booksRepository: BooksRepository
 ) : ViewModel() {
 
     private val _uiState = MutableSharedFlow<DetailUiState>()
     val uiState = _uiState.asSharedFlow().asLiveData()
 
     fun saveBook(book: Book) = viewModelScope.launch(Dispatchers.IO) {
-        booksDbRepository.saveBookDb(book)
+        booksRepository.saveBookDb(book)
             .collectLatest {
                 when (it.state) {
                     ApiHandlerState.SUCCESS -> {
@@ -46,7 +44,7 @@ class DetailViewModel(
     }
 
     fun deleteBook(book: Book) = viewModelScope.launch(Dispatchers.IO) {
-        booksDbRepository.deleteBookDb(book)
+        booksRepository.deleteBookDb(book)
             .collectLatest {
                 when (it.state) {
                     ApiHandlerState.SUCCESS -> {
@@ -65,7 +63,7 @@ class DetailViewModel(
     }
 
     fun searchBook(book: Book) = viewModelScope.launch(Dispatchers.IO) {
-        booksDbRepository.isBookSavedDb(book)
+        booksRepository.isBookSavedDb(book)
             .collectLatest {
                 when (it.state) {
                     ApiHandlerState.SUCCESS -> {

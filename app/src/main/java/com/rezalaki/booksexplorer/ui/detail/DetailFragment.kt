@@ -1,6 +1,7 @@
 package com.rezalaki.booksexplorer.ui.detail
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.rezalaki.booksexplorer.R
 import com.rezalaki.booksexplorer.data.model.Book
 import com.rezalaki.booksexplorer.databinding.FragmentDetailBinding
 import com.rezalaki.booksexplorer.ui.base.BaseFragment
+import com.rezalaki.booksexplorer.util.enterByScaleAnimation
 import com.rezalaki.booksexplorer.util.gone
 import com.rezalaki.booksexplorer.util.loadImage
 import com.rezalaki.booksexplorer.util.visible
@@ -43,6 +45,8 @@ class DetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.searchBook(bookDetail)
+
         binding.tvTitle.text =
             if (bookDetail.title.length > 30) bookDetail.title.take(30) + "..." else bookDetail.title
         binding.tvAuthor.text =
@@ -56,6 +60,7 @@ class DetailFragment : BaseFragment() {
         }
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            Log.d("TAGGGGGGG", "onViewCreated => $state");
             when (state) {
                 is DetailUiState.BookFoundFailed -> showErrorMessage(state.errorMessage)
                 is DetailUiState.SaveToDbFailed -> showErrorMessage(state.errorMessage)
@@ -69,6 +74,7 @@ class DetailFragment : BaseFragment() {
                     }
                     binding.ivMark.setImageDrawable(drawable)
                     binding.ivMark.visible()
+                    binding.ivMark.enterByScaleAnimation()
                     handleMarkIconClick(state.bookFound)
                 }
                 DetailUiState.DeleteFromDbSuccess -> {
@@ -76,6 +82,7 @@ class DetailFragment : BaseFragment() {
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_empty)
                     )
                     binding.ivMark.visible()
+                    binding.ivMark.enterByScaleAnimation()
                     handleMarkIconClick(false)
                 }
                 DetailUiState.SaveToDbSuccess -> {
@@ -83,6 +90,7 @@ class DetailFragment : BaseFragment() {
                         ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_fill)
                     )
                     binding.ivMark.visible()
+                    binding.ivMark.enterByScaleAnimation()
                     handleMarkIconClick(true)
                 }
             }
@@ -91,13 +99,14 @@ class DetailFragment : BaseFragment() {
     }
 
     private fun handleMarkIconClick(isSaved: Boolean){
-         val action = if (isSaved) {
-            viewModel.saveBook(bookDetail)
-         }
-         else {
-             viewModel.deleteBook(bookDetail)
-         }
-        binding.ivMark.setOnClickListener { action.start() }
+        binding.ivMark.setOnClickListener {
+            if (isSaved) {
+                viewModel.deleteBook(bookDetail)
+            }
+            else {
+                viewModel.saveBook(bookDetail)
+            }
+        }
     }
 
     override fun onDestroyView() {
