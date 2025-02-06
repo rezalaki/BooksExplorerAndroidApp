@@ -2,11 +2,12 @@ package com.rezalaki.booksexplorer.ui.base
 
 import androidx.fragment.app.Fragment
 import com.rezalaki.booksexplorer.R
+import dagger.hilt.android.AndroidEntryPoint
 import org.aviran.cookiebar2.CookieBar
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-
+@AndroidEntryPoint
 open class BaseFragment : Fragment() {
 
     fun showNetworkErrorMessage() {

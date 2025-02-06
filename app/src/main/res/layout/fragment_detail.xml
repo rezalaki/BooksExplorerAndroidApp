@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center_vertical"
                 android:adjustViewBounds="true"
-                android:padding="8dp"
+                android:padding="10dp"
                 android:src="@drawable/ic_mark_empty" />
 
         </FrameLayout>

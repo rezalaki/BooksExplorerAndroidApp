@@ -7,4 +7,6 @@
     <string name="input_hint">type at least 4 characters...</string>
     <string name="network_not_available">Your network is not available!</string>
     <string name="try_again">Try Again</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

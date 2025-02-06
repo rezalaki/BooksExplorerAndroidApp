@@ -86,4 +86,17 @@ class BooksRepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    override suspend fun fetchAllSavedBooksDb(): Flow<ApiHandler<List<Book>>> =
+        flow {
+            emit(ApiHandler.loading())
+
+            val books = bookDao.getAllBooks()
+
+            emit( ApiHandler.success(books) )
+
+        }.catch {
+            emit( ApiHandler.error("ERROR IN FETCHING FROM DB, ${it.message.orEmpty()}") )
+
+        }.flowOn(Dispatchers.IO)
+
 }
