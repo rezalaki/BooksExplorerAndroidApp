@@ -25,3 +25,8 @@ https://github.com/user-attachments/assets/dc044a05-990e-4931-ae2b-984a74b90215
 - Repository Pattern
 - Navigation Component
 - Single Activity
+
+### Todo
+- [] add room for caching
+- [] paging 3
+- [] unit testing
