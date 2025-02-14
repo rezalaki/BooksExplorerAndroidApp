@@ -49,6 +49,8 @@ kapt {
 }
 
 dependencies {
+    // Paging 3
+    implementation("androidx.paging:paging-runtime-ktx:3.3.5")
     // Cookiebar2
     implementation("org.aviran.cookiebar2:cookiebar2:1.1.5")
     // Coil

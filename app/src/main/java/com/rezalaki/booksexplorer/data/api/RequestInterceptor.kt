@@ -10,7 +10,7 @@ class RequestInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val httpUrl = request.url.newBuilder()
-            .addQueryParameter("limit", Constants.API_RESPONSE_LIMIT_COUNT)
+//            .addQueryParameter("limit", Constants.API_RESPONSE_LIMIT_COUNT)
             .build()
         val newRequest = request.newBuilder()
             .addHeader("Content-Type", "application/json")

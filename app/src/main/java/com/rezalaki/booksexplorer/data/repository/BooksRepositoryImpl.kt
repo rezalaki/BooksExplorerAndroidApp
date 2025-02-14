@@ -21,7 +21,7 @@ class BooksRepositoryImpl @Inject constructor(
         return flow {
             emit(ApiHandler.loading())
 
-            val result = apiServices.searchBooks(title)
+            val result = apiServices.searchBooks(title, 1, 10)
             if (result.isSuccessful && result.body() != null) {
 
                 val mappedBooks = result.body()!!.docs.map { it.toBook() }

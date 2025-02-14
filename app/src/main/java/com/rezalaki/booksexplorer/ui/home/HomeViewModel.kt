@@ -6,7 +6,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.liveData
 import com.rezalaki.booksexplorer.data.api.ApiHandlerState
+import com.rezalaki.booksexplorer.data.api.ApiServices
+import com.rezalaki.booksexplorer.data.api.BookPagingSource
 import com.rezalaki.booksexplorer.data.model.Book
 import com.rezalaki.booksexplorer.data.repository.BooksRepository
 import com.rezalaki.booksexplorer.util.NetworkChecker
@@ -18,6 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val booksRepository: BooksRepository,
-    private val networkChecker: NetworkChecker
+    private val networkChecker: NetworkChecker,
+    private val apiServices: ApiServices
 ) : ViewModel() {
 
     companion object {
@@ -49,7 +57,7 @@ class HomeViewModel @Inject constructor(
                 _uiState.emit(HomeUiState.NoConnection)
                 return@launch
             }
-            if (title.length < 4) {
+            if (title.length < 4 && _uiState.value != HomeUiState.EmptySearchInput) {
                 _uiState.emit(HomeUiState.EmptySearchInput)
                 return@launch
             }
@@ -76,5 +84,16 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    //////////////////////////////////////
+
+    val booksPaged = Pager(
+        config = PagingConfig(
+            pageSize = 8,
+            prefetchDistance = 1,
+            enablePlaceholders = true
+        ),
+        pagingSourceFactory = { BookPagingSource(apiServices, "apple") }
+    ).flow
 
 }

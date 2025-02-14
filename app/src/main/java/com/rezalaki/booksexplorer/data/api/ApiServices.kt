@@ -10,6 +10,10 @@ import retrofit2.http.Query
 interface ApiServices {
 
     @GET("search.json")
-    suspend fun searchBooks(@Query("title") title: String? = null): Response<BooksResponse>
+    suspend fun searchBooks(
+        @Query("title") title: String? = null,
+        @Query("page") page: Int,
+        @Query("limit") size: Int
+    ): Response<BooksResponse>
 
 }
