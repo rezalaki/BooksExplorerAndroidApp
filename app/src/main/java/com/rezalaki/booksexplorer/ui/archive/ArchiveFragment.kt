@@ -62,48 +62,13 @@ class ArchiveFragment : BaseFragment() {
 
         viewModel.uiState.observe(viewLifecycleOwner) { ui ->
             when (ui) {
-                is ArchiveUiState.FetchFailed -> {
-                    showErrorMessage(ui.errorMessage)
-                    binding.boxError.apply {
-                        tvError.text = resources.getString(R.string.failure)
-                        root.visible()
-                        btnRetry.visible()
-                    }
-                    binding.rvMain.gone()
-                    binding.pbLoading.gone()
-                }
+                is ArchiveUiState.FetchFailed -> uiFetchingFailed(ui.errorMessage)
 
-                is ArchiveUiState.FetchSuccess -> {
-                    binding.boxError.root.gone()
-                    binding.pbLoading.gone()
+                is ArchiveUiState.FetchSuccess -> uiFetchingSuccessed(ui.data)
 
-                    if (booksRvAdapter.currentList != ui.data) {
-                        binding.rvMain.scrollToPosition(0)
-                        booksRvAdapter.apply {
-                            submitList(null)
-                            resetLastSeenPosition()
-                        }
-                    }
+                ArchiveUiState.Loading -> uiLoading()
 
-                    booksRvAdapter.submitList(ui.data)
-                    binding.rvMain.visible()
-                }
-
-                ArchiveUiState.Loading -> {
-                    binding.boxError.root.gone()
-                    binding.rvMain.gone()
-                    binding.pbLoading.visible()
-                }
-
-                ArchiveUiState.EmptyData -> {
-                    binding.boxError.apply {
-                        tvError.text = resources.getString(R.string.no_data)
-                        btnRetry.gone()
-                    }
-                    binding.pbLoading.gone()
-                    binding.boxError.root.visible()
-                    binding.rvMain.gone()
-                }
+                ArchiveUiState.EmptyData -> uiEmptyData()
             }
         }
 
@@ -111,6 +76,49 @@ class ArchiveFragment : BaseFragment() {
             fetchBooks()
         }
 
+    }
+
+    private fun uiEmptyData() {
+        binding.boxError.apply {
+            tvError.text = resources.getString(R.string.no_data)
+            btnRetry.gone()
+        }
+        binding.pbLoading.gone()
+        binding.boxError.root.visible()
+        binding.rvMain.gone()
+    }
+
+    private fun uiLoading() {
+        binding.boxError.root.gone()
+        binding.rvMain.gone()
+        binding.pbLoading.visible()
+    }
+
+    private fun uiFetchingSuccessed(booksList: List<Book>) {
+        binding.boxError.root.gone()
+        binding.pbLoading.gone()
+
+        if (booksRvAdapter.currentList != booksList) {
+            binding.rvMain.scrollToPosition(0)
+            booksRvAdapter.apply {
+                submitList(null)
+                resetLastSeenPosition()
+            }
+        }
+
+        booksRvAdapter.submitList(booksList)
+        binding.rvMain.visible()
+    }
+
+    private fun uiFetchingFailed(errorMessage: String) {
+        showErrorMessage(errorMessage)
+        binding.boxError.apply {
+            tvError.text = resources.getString(R.string.failure)
+            root.visible()
+            btnRetry.visible()
+        }
+        binding.rvMain.gone()
+        binding.pbLoading.gone()
     }
 
     private fun fetchBooks(){

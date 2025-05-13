@@ -4,10 +4,26 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.widget.ImageView
+import android.widget.SearchView
 import coil.load
 import com.rezalaki.booksexplorer.BuildConfig
 import com.rezalaki.booksexplorer.R
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
+
+fun SearchView.onTextChanged(): Flow<String> = callbackFlow {
+    setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+        override fun onQueryTextSubmit(query: String?): Boolean = false
+
+        override fun onQueryTextChange(newText: String?): Boolean {
+            trySend(newText.toString())
+            return true
+        }
+    })
+    awaitClose { setOnQueryTextListener(null) }
+}
 
 fun View.gone() {
     this.visibility = View.GONE

@@ -11,7 +11,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -24,37 +26,21 @@ class HomeViewModel @Inject constructor(
     private val networkChecker: NetworkChecker
 ) : ViewModel() {
 
-    companion object {
-        const val DEBOUNCE_DELAY = 400L
-    }
 
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.EmptySearchInput)
-    val uiState = _uiState.asStateFlow().asLiveData()
+    private val _uiState = MutableSharedFlow<HomeUiState>()
+    val uiState = _uiState.asLiveData()
 
-
-    private var jobSearch: Job? = null
-    private var lastSearchedTitle = ""
 
     fun search(title: String) {
-        if (lastSearchedTitle == title) {
-            return
-        }
-        jobSearch?.cancel()
-        jobSearch = viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             if (networkChecker.isNetworkAvailable().not()) {
                 _uiState.emit(HomeUiState.NoConnection)
                 return@launch
             }
-            if (title.length < 4) {
-                _uiState.emit(HomeUiState.EmptySearchInput)
-                return@launch
-            }
 
-            delay(DEBOUNCE_DELAY)
             booksRepository.searchBooksApi(title).collectLatest { api ->
                 val uiState = when (api.state) {
                     ApiHandlerState.SUCCESS -> {
-                        lastSearchedTitle = title
 
                         val booksList = api.data as List<Book>
                         if (booksList.isEmpty()) {

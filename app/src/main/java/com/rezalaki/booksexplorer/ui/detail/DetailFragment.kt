@@ -1,8 +1,6 @@
 package com.rezalaki.booksexplorer.ui.detail
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,42 +58,54 @@ class DetailFragment : BaseFragment() {
         }
 
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
-            Log.d("TAGGGGGGG", "onViewCreated => $state");
             when (state) {
                 is DetailUiState.BookFoundFailed -> showErrorMessage(state.errorMessage)
+
                 is DetailUiState.SaveToDbFailed -> showErrorMessage(state.errorMessage)
+
                 is DetailUiState.DeleteFromDbFailed -> showErrorMessage(state.errorMessage)
+
                 is DetailUiState.Loading -> binding.ivMark.gone()
-                is DetailUiState.BookFoundSuccess -> {
-                    val drawable = if (state.bookFound) {
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_fill)
-                    } else {
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_empty)
-                    }
-                    binding.ivMark.setImageDrawable(drawable)
-                    binding.ivMark.visible()
-                    binding.ivMark.enterByScaleAnimation()
-                    handleMarkIconClick(state.bookFound)
-                }
-                DetailUiState.DeleteFromDbSuccess -> {
-                    binding.ivMark.setImageDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_empty)
-                    )
-                    binding.ivMark.visible()
-                    binding.ivMark.enterByScaleAnimation()
-                    handleMarkIconClick(false)
-                }
-                DetailUiState.SaveToDbSuccess -> {
-                    binding.ivMark.setImageDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_fill)
-                    )
-                    binding.ivMark.visible()
-                    binding.ivMark.enterByScaleAnimation()
-                    handleMarkIconClick(true)
-                }
+
+                is DetailUiState.BookFoundSuccess ->  uiBookFoundSuccess(state.isBookFound)
+
+                DetailUiState.DeleteFromDbSuccess -> uiDeleteFromDbSuccessed()
+
+                DetailUiState.SaveToDbSuccess -> uiBookSaveToDbSuccessed()
+
             }
         }
 
+    }
+
+    private fun uiBookSaveToDbSuccessed() {
+        binding.ivMark.setImageDrawable(
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_fill)
+        )
+        binding.ivMark.visible()
+        binding.ivMark.enterByScaleAnimation()
+        handleMarkIconClick(true)
+    }
+
+    private fun uiDeleteFromDbSuccessed() {
+        binding.ivMark.setImageDrawable(
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_empty)
+        )
+        binding.ivMark.visible()
+        binding.ivMark.enterByScaleAnimation()
+        handleMarkIconClick(false)
+    }
+
+    private fun uiBookFoundSuccess(isBookFound: Boolean) {
+        val drawable = if (isBookFound) {
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_fill)
+        } else {
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_mark_empty)
+        }
+        binding.ivMark.setImageDrawable(drawable)
+        binding.ivMark.visible()
+        binding.ivMark.enterByScaleAnimation()
+        handleMarkIconClick(isBookFound)
     }
 
     private fun handleMarkIconClick(isSaved: Boolean){
