@@ -12,4 +12,11 @@ interface ApiServices {
     @GET("search.json")
     suspend fun searchBooks(@Query("title") title: String? = null): Response<BooksResponse>
 
+    @GET("search.json")
+    suspend fun searchBooksPagination(
+        @Query("title") title: String? = null,
+        @Query("page") page: Int,
+        @Query("size") size: Int = 20
+    ): BooksResponse
+
 }

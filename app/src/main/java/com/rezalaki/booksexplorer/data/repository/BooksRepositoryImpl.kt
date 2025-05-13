@@ -2,6 +2,9 @@ package com.rezalaki.booksexplorer.data.repository
 
 
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.rezalaki.booksexplorer.data.api.ApiHandler
 import com.rezalaki.booksexplorer.data.api.ApiServices
 import com.rezalaki.booksexplorer.data.db.BookDao
@@ -93,5 +96,23 @@ class BooksRepositoryImpl @Inject constructor(
             emit(ApiHandler.error("ERROR IN FETCHING FROM DB, ${it.message.orEmpty()}"))
 
         }
+
+    override suspend fun searchBooksPaginationApi(
+        title: String,
+        page: Int,
+        size: Int
+    ): Flow<PagingData<Book>> = flow {
+        Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = true,
+                initialLoadSize = 20,
+                prefetchDistance = 1
+            ),
+            pagingSourceFactory = {
+                BooksPagingSource(apiServices, title)
+            }
+        ).flow
+    }
 
 }
