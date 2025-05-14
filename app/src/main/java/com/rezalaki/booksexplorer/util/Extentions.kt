@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.callbackFlow
 
 fun SearchView.onTextChanged(): Flow<String> = callbackFlow {
     setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-        override fun onQueryTextSubmit(query: String?): Boolean = false
+        override fun onQueryTextSubmit(query: String?): Boolean = true
 
         override fun onQueryTextChange(newText: String?): Boolean {
             trySend(newText.toString())

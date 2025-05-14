@@ -16,7 +16,7 @@ interface ApiServices {
     suspend fun searchBooksPagination(
         @Query("title") title: String? = null,
         @Query("page") page: Int,
-        @Query("size") size: Int = 20
+        @Query("limit") size: Int
     ): BooksResponse
 
 }

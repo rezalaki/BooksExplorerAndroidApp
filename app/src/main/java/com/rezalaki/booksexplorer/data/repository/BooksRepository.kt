@@ -14,6 +14,6 @@ interface BooksRepository {
     suspend fun isBookSavedDb(book: Book): Flow<ApiHandler<Boolean>>
     suspend fun fetchAllSavedBooksDb(): Flow<ApiHandler<List<Book>>>
 
-    suspend fun searchBooksPaginationApi(title: String, page: Int, size: Int): Flow<PagingData<Book>>
+    suspend fun searchBooksPaginationApi(title: String): Flow<PagingData<Book>>
 
 }

@@ -1,4 +1,4 @@
-package com.rezalaki.booksexplorer.ui.home
+package com.rezalaki.booksexplorer.ui.home.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,11 +15,15 @@ class BooksRvAdapter(
     private val bookClicked: (clickedBook: Book) -> Unit
 ) : ListAdapter<Book, BooksRvAdapter.BookViewHolder>(
     object : DiffUtil.ItemCallback<Book>() {
-        override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean =
-            (oldItem.id == newItem.id)
+        override fun areItemsTheSame(
+            oldItem: Book,
+            newItem: Book
+        ): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean =
-            (oldItem.id == newItem.id)
+        override fun areContentsTheSame(
+            oldItem: Book,
+            newItem: Book
+        ): Boolean = oldItem.id == newItem.id
     }
 ) {
 
@@ -55,6 +59,7 @@ class BooksRvAdapter(
     }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
+        holder.setIsRecyclable(false)
         holder.bind(getItem(position))
     }
 

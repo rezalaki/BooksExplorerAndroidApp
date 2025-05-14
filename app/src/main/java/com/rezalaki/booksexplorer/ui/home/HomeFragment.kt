@@ -1,22 +1,29 @@
 package com.rezalaki.booksexplorer.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.rezalaki.booksexplorer.R
 import com.rezalaki.booksexplorer.data.model.Book
 import com.rezalaki.booksexplorer.databinding.FragmentHomeBinding
 import com.rezalaki.booksexplorer.ui.base.BaseFragment
+import com.rezalaki.booksexplorer.ui.home.adapters.BooksPagedAdapter
+import com.rezalaki.booksexplorer.ui.home.adapters.BooksRvAdapter
+import com.rezalaki.booksexplorer.ui.home.adapters.LoadingStatePagedAdapter
+import com.rezalaki.booksexplorer.util.Constants.USE_PAGINATION
 import com.rezalaki.booksexplorer.util.enterByScaleAnimation
 import com.rezalaki.booksexplorer.util.gone
 import com.rezalaki.booksexplorer.util.onTextChanged
 import com.rezalaki.booksexplorer.util.visible
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -31,7 +38,15 @@ class HomeFragment : BaseFragment() {
 
     private val viewModel: HomeViewModel by viewModels()
 
+
     private val booksRvAdapter = BooksRvAdapter { clickedBook: Book ->
+        findNavController().navigate(
+            HomeFragmentDirections
+                .actionHomeFragmentToDetailFragment(clickedBook)
+        )
+    }
+
+    private val booksPaginationAdapter = BooksPagedAdapter { clickedBook ->
         findNavController().navigate(
             HomeFragmentDirections
                 .actionHomeFragmentToDetailFragment(clickedBook)
@@ -49,19 +64,18 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.rvMain.apply {
-            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-            adapter = booksRvAdapter
-        }
-
         lifecycleScope.launch {
             binding.searchView
                 .onTextChanged()
                 .debounce(350L)
                 .filter { it.isNotEmpty() }
                 .distinctUntilChanged()
-                .collect { txt ->
-                    viewModel.search(txt)
+                .collectLatest { txt ->
+                    if (USE_PAGINATION) {
+                        viewModel.searchPagination(txt)
+                    } else {
+                        viewModel.search(txt)
+                    }
                 }
         }
 
@@ -70,7 +84,7 @@ class HomeFragment : BaseFragment() {
             when (ui) {
                 is HomeUiState.LoadFailed -> uiLoadBooksFailed(ui.errorMessage)
 
-                is HomeUiState.LoadSuccess -> uiLoadBooksSuccessed(ui.data)
+                is HomeUiState.LoadNonePaginatedSuccess -> uiLoadBooksSuccessed(ui.data)
 
                 HomeUiState.Loading -> uiLoading()
 
@@ -79,6 +93,35 @@ class HomeFragment : BaseFragment() {
                 HomeUiState.EmptyData -> uiEmptyResult()
 
                 HomeUiState.EmptySearchInput -> uiEmptySearchInput()
+
+                is HomeUiState.LoadPagination -> uiLoadPaginatedData(ui.data)
+            }
+        }
+
+
+        binding.rvMain.apply {
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            if (USE_PAGINATION) {
+//                val loadingStateAdapter = LoadingStatePagedAdapter()
+                adapter = booksPaginationAdapter
+
+                booksPaginationAdapter.addLoadStateListener {
+                    Log.d(
+                        "TAGGGGGGG",
+                        ">>=== isIdle:${it.isIdle} | hasError:${it.hasError} | refresh:${it.refresh} | mediator:${it.mediator} | append:${it.append} | prepend:${it.prepend} "
+                    );
+                }
+                booksPaginationAdapter.addOnPagesUpdatedListener {
+                    Log.d("TAGGGGGGG", "-->> PagesUpdatedListener");
+                }
+                booksPaginationAdapter.withLoadStateFooter(
+                    footer = LoadingStatePagedAdapter {
+                        booksPaginationAdapter.retry()
+                    }
+                )
+
+            } else {
+                adapter = booksRvAdapter
             }
         }
 
@@ -94,6 +137,10 @@ class HomeFragment : BaseFragment() {
             }
         }
 
+    }
+
+    private fun uiLoadPaginatedData(books: PagingData<Book>) {
+        booksPaginationAdapter.submitData(lifecycle, books)
     }
 
     private fun uiEmptySearchInput() {
@@ -135,7 +182,6 @@ class HomeFragment : BaseFragment() {
     private fun uiLoadBooksSuccessed(booksList: List<Book>) {
         binding.boxError.root.gone()
         binding.pbLoading.gone()
-
         if (booksRvAdapter.currentList != booksList) {
             binding.rvMain.scrollToPosition(0)
             booksRvAdapter.apply {

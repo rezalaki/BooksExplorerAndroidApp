@@ -1,7 +1,9 @@
 package com.rezalaki.booksexplorer.data.repository
 
 
+import android.provider.SyncStateContract.Constants
 import android.util.Log
+import androidx.core.graphics.toColorInt
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -9,6 +11,7 @@ import com.rezalaki.booksexplorer.data.api.ApiHandler
 import com.rezalaki.booksexplorer.data.api.ApiServices
 import com.rezalaki.booksexplorer.data.db.BookDao
 import com.rezalaki.booksexplorer.data.model.Book
+import com.rezalaki.booksexplorer.util.Constants.API_RESPONSE_LIMIT_COUNT
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -94,25 +97,21 @@ class BooksRepositoryImpl @Inject constructor(
 
         }.catch {
             emit(ApiHandler.error("ERROR IN FETCHING FROM DB, ${it.message.orEmpty()}"))
-
         }
 
     override suspend fun searchBooksPaginationApi(
-        title: String,
-        page: Int,
-        size: Int
-    ): Flow<PagingData<Book>> = flow {
-        Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = true,
-                initialLoadSize = 20,
-                prefetchDistance = 1
-            ),
-            pagingSourceFactory = {
-                BooksPagingSource(apiServices, title)
-            }
-        ).flow
-    }
+        title: String
+    ): Flow<PagingData<Book>> = Pager(
+        config = PagingConfig(
+            pageSize = API_RESPONSE_LIMIT_COUNT.toInt(),
+            enablePlaceholders = true,
+            initialLoadSize = API_RESPONSE_LIMIT_COUNT.toInt(),
+            prefetchDistance = 1
+        ),
+        pagingSourceFactory = {
+            BooksPagingSource(apiServices, title, API_RESPONSE_LIMIT_COUNT.toInt())
+        }
+    ).flow
+
 
 }
