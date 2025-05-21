@@ -1,6 +1,5 @@
 package com.rezalaki.booksexplorer.data.api
 
-import android.util.Log
 
 data class ApiHandler<out T>(
     val state: ApiHandlerState,

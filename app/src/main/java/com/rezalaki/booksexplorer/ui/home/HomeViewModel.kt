@@ -60,7 +60,7 @@ class HomeViewModel @Inject constructor(
                 .cachedIn(viewModelScope)
                 .collectLatest {
                     _uiState.emit(
-                        HomeUiState.LoadPagination(it)
+                        HomeUiState.LoadPaginationSuccess(it)
                     )
                 }
         }

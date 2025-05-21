@@ -15,7 +15,7 @@ sealed class HomeUiState {
     data object EmptySearchInput : HomeUiState()
 
     data class LoadNonePaginatedSuccess(val data: List<Book>): HomeUiState()
-    data class LoadPagination(val data: PagingData<Book>): HomeUiState()
+    data class LoadPaginationSuccess(val data: PagingData<Book>): HomeUiState()
 
     data class LoadFailed(val errorMessage: String) : HomeUiState()
 

@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.rezalaki.booksexplorer.data.api.ApiServices
 import com.rezalaki.booksexplorer.data.model.Book
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class BooksPagingSource @Inject constructor(
@@ -12,6 +13,7 @@ class BooksPagingSource @Inject constructor(
     private val size: Int
 ) : PagingSource<Int, Book>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Book> {
+        delay(2_000)
         return try {
             val pageNumber = params.key ?: 1
             val response = apiServices.searchBooksPagination(title, pageNumber, size)

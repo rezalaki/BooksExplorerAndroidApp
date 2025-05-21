@@ -41,15 +41,15 @@
         app:layout_constraintTop_toBottomOf="@+id/cardToolbar" />
 
     <ProgressBar
-        android:visibility="gone"
-        tools:visibility="visible"
         android:id="@+id/pbLoading"
         android:layout_width="56dp"
         android:layout_height="56dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardToolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/cardToolbar"
+        tools:visibility="visible" />
 
     <include
         android:id="@+id/boxError"
@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardToolbar"
@@ -68,15 +68,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="saved books"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         android:backgroundTint="@color/white"
+        android:elevation="2dp"
+        android:text="saved books"
         android:textColor="@color/pink"
         app:elevation="2dp"
-        android:elevation="2dp"
         app:icon="@drawable/ic_mark_empty"
         app:iconTint="@color/pink"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -99,19 +99,18 @@ class BooksRepositoryImpl @Inject constructor(
             emit(ApiHandler.error("ERROR IN FETCHING FROM DB, ${it.message.orEmpty()}"))
         }
 
-    override suspend fun searchBooksPaginationApi(
-        title: String
-    ): Flow<PagingData<Book>> = Pager(
-        config = PagingConfig(
-            pageSize = API_RESPONSE_LIMIT_COUNT.toInt(),
-            enablePlaceholders = true,
-            initialLoadSize = API_RESPONSE_LIMIT_COUNT.toInt(),
-            prefetchDistance = 1
-        ),
-        pagingSourceFactory = {
-            BooksPagingSource(apiServices, title, API_RESPONSE_LIMIT_COUNT.toInt())
-        }
-    ).flow
+    override suspend fun searchBooksPaginationApi(title: String): Flow<PagingData<Book>> =
+        Pager(
+            config = PagingConfig(
+                pageSize = API_RESPONSE_LIMIT_COUNT,
+                enablePlaceholders = true,
+                initialLoadSize = API_RESPONSE_LIMIT_COUNT,
+                prefetchDistance = 1
+            ),
+            pagingSourceFactory = {
+                BooksPagingSource(apiServices, title, API_RESPONSE_LIMIT_COUNT)
+            }
+        ).flow
 
 
 }

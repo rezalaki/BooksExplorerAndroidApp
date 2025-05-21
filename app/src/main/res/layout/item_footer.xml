@@ -6,19 +6,17 @@
     android:orientation="vertical"
     android:paddingVertical="40dp">
     <ProgressBar
-        android:id="@+id/progressCircular"
-        android:layout_width="74dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:id="@+id/pbLoading"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content" />
     <TextView
         android:id="@+id/tvError"
-        android:textSize="16sp"
-        android:paddingVertical="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="default error happend!"
         android:gravity="center"
-        />
+        android:paddingVertical="16dp"
+        android:text="something went wrong!"
+        android:textSize="16sp" />
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRetry"
         android:layout_width="wrap_content"

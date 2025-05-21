@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.rezalaki.booksexplorer.R
@@ -16,13 +18,14 @@ import com.rezalaki.booksexplorer.databinding.FragmentHomeBinding
 import com.rezalaki.booksexplorer.ui.base.BaseFragment
 import com.rezalaki.booksexplorer.ui.home.adapters.BooksPagedAdapter
 import com.rezalaki.booksexplorer.ui.home.adapters.BooksRvAdapter
-import com.rezalaki.booksexplorer.ui.home.adapters.LoadingStatePagedAdapter
+import com.rezalaki.booksexplorer.ui.home.adapters.FooterPaginationStateAdapter
 import com.rezalaki.booksexplorer.util.Constants.USE_PAGINATION
 import com.rezalaki.booksexplorer.util.enterByScaleAnimation
 import com.rezalaki.booksexplorer.util.gone
 import com.rezalaki.booksexplorer.util.onTextChanged
 import com.rezalaki.booksexplorer.util.visible
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -61,6 +64,7 @@ class HomeFragment : BaseFragment() {
         return binding.root
     }
 
+    @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -94,7 +98,7 @@ class HomeFragment : BaseFragment() {
 
                 HomeUiState.EmptySearchInput -> uiEmptySearchInput()
 
-                is HomeUiState.LoadPagination -> uiLoadPaginatedData(ui.data)
+                is HomeUiState.LoadPaginationSuccess -> uiLoadPaginatedData(ui.data)
             }
         }
 
@@ -102,23 +106,27 @@ class HomeFragment : BaseFragment() {
         binding.rvMain.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             if (USE_PAGINATION) {
-//                val loadingStateAdapter = LoadingStatePagedAdapter()
-                adapter = booksPaginationAdapter
+
+                setHasFixedSize(true)
+                adapter = booksPaginationAdapter.apply {
+                    withLoadStateFooter(
+                        FooterPaginationStateAdapter {
+                            retry()
+                        }
+                    )
+                }
+
 
                 booksPaginationAdapter.addLoadStateListener {
                     Log.d(
                         "TAGGGGGGG",
-                        ">>=== isIdle:${it.isIdle} | hasError:${it.hasError} | refresh:${it.refresh} | mediator:${it.mediator} | append:${it.append} | prepend:${it.prepend} "
+                        ">>>>>=====\n\r isIdle:${it.isIdle} \n\r hasError:${it.hasError} \n\r refresh:${it.refresh} \n\r mediator:${it.mediator} \n\r append:${it.append} \n\r prepend:${it.prepend} "
                     );
+                    Log.d("TAGGGGGGG", "");
                 }
                 booksPaginationAdapter.addOnPagesUpdatedListener {
                     Log.d("TAGGGGGGG", "-->> PagesUpdatedListener");
                 }
-                booksPaginationAdapter.withLoadStateFooter(
-                    footer = LoadingStatePagedAdapter {
-                        booksPaginationAdapter.retry()
-                    }
-                )
 
             } else {
                 adapter = booksRvAdapter
@@ -127,7 +135,11 @@ class HomeFragment : BaseFragment() {
 
         binding.boxError.btnRetry.setOnClickListener {
             val query = binding.searchView.query.toString().trim()
-            viewModel.search(query)
+            if (USE_PAGINATION) {
+                viewModel.searchPagination(query)
+            } else {
+                viewModel.search(query)
+            }
         }
 
         binding.fabSavedBooks.apply {
